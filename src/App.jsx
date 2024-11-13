@@ -1,15 +1,17 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import SearchFilter from './components/SearchFilter'
 import Form from './components/Form'
 import Contacts from './components/Contacts'
+import Notification from './components/Notification'
+
+import contactsService from './services/contacts'
 
 const App = () => {
-  const [persons, setPersons] = useState([
-    { name: 'Arto Hellas', number: '555-555-5555' },
-  ])
+  const [persons, setPersons] = useState([])
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [filter, setFilter] = useState('')
+  const [message, setMessage] = useState(null)
 
   const shownPersons = persons.filter(person => {
     const pName = person.name.toLowerCase()
@@ -17,9 +19,22 @@ const App = () => {
     return pName.startsWith(search) ||
            pName.split(' ').some(part => part.startsWith(search))
   });
+
+  console.log('Message', message);
+  useEffect(() => {
+    console.log('effect')
+    contactsService
+      .getAll()
+      .then(contacts => {
+        setPersons(contacts)
+      })
+  }, [])
+  console.log('render', persons.length, 'contacts')
+
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={message}/>
       <SearchFilter
         setFilter={setFilter}
       />
@@ -32,10 +47,15 @@ const App = () => {
         setFilter={setFilter}
         setPersons={setPersons}
         persons={persons}
+        setMessage={setMessage}
       />
       <h2>Numbers</h2>
       <ul>
-        <Contacts persons={shownPersons} />
+        <Contacts
+          persons={shownPersons}
+          setPersons={setPersons}
+          setMessage={setMessage}  
+        />
       </ul>
     </div>
   )

@@ -1,3 +1,5 @@
+import contactsService from '../services/contacts'
+
 const Form = ({
   setNewName,
   newName,
@@ -5,16 +7,43 @@ const Form = ({
   newNumber,
   setFilter,
   setPersons,
-  persons
+  persons,
+  setMessage
 }) => {
 
   const addContact = (event) => {
     event.preventDefault();
+
+
     if (persons.some(person => person.name === newName)) {
-      alert(`${newName} is already in the phonebook`)
+      let person = persons.find(p => p.name === newName);
+
+      if (person.number !== newNumber) {
+        let updatedPerson = {...person, number: newNumber}
+        contactsService
+          .update(person.id, updatedPerson)
+          .then(contact => {
+            setPersons(persons.map(p => p.id === person.id ? contact : p))
+            setMessage(`Updated contact info for ${contact.name}`)
+            setTimeout(() => {
+              setMessage(null)
+            }, 5000)
+          })
+
+      } else {
+        alert(`${newName} is already in the phonebook`)
+      }
     } else {
-      let newPeople = persons.concat({name: newName, number: newNumber})
-      setPersons(newPeople)
+      let newPerson = {name: newName, number: newNumber}
+      contactsService
+        .create(newPerson)
+        .then(personObject => {
+          setPersons(persons.concat(personObject))
+          setMessage(`Added ${newPerson.name}`)
+          setTimeout(() => {
+            setMessage(null)
+          }, 5000)
+        })
     }
     setNewName('')
     setNewNumber('')
