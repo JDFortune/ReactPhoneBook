@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react'
 import SearchFilter from './components/SearchFilter'
 import Form from './components/Form'
-import Contacts from './components/Contacts'
+import Persons from './components/Persons'
 import Notification from './components/Notification'
 
-import contactsService from './services/contacts'
+import personsService from './services/persons'
 
 const App = () => {
   const [persons, setPersons] = useState([])
@@ -20,16 +20,15 @@ const App = () => {
            pName.split(' ').some(part => part.startsWith(search))
   });
 
-  console.log('Message', message);
   useEffect(() => {
     console.log('effect')
-    contactsService
+    personsService
       .getAll()
-      .then(contacts => {
-        setPersons(contacts)
+      .then(persons => {
+        setPersons(persons)
       })
   }, [])
-  console.log('render', persons.length, 'contacts')
+  console.log('render', persons.length, 'persons')
 
   return (
     <div>
@@ -38,7 +37,7 @@ const App = () => {
       <SearchFilter
         setFilter={setFilter}
       />
-      <h2>add a new contact</h2>
+      <h2>add a new person</h2>
       <Form
         setNewName={setNewName}
         newName={newName}
@@ -51,7 +50,7 @@ const App = () => {
       />
       <h2>Numbers</h2>
       <ul>
-        <Contacts
+        <Persons
           persons={shownPersons}
           setPersons={setPersons}
           setMessage={setMessage}  

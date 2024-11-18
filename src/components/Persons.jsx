@@ -1,20 +1,20 @@
-import contactsService from '../services/contacts'
+import personsService from '../services/persons'
 
-const Contacts = ({persons, setPersons, setMessage}) => {
-  const deleteContact = (person) => {
+const Persons = ({persons, setPersons, setMessage}) => {
+  const deletePerson = (person) => {
     const confirmation = window.confirm(`Delete ${person.name}?`)
     if (confirmation) {
-      contactsService
-        .deleteContact(person.id)
-        .then(name => {
+      personsService
+        .deletePerson(person.id)
+        .then(data => {
+          setMessage(`${person.name} removed from persons`)
           setPersons(persons.filter(p => p.id !== person.id))
-          setMessage(`${name} removed from contacts`)
           setTimeout(() => {
             setMessage(null)
           }, 5000)
         })
         .catch((message) => {
-          setMessage(`${person.name} was already removed from contacts`)
+          setMessage(`${person.name} was already removed from persons`)
           setTimeout(() => {
             setMessage(null)
           }, 5000)
@@ -23,13 +23,13 @@ const Contacts = ({persons, setPersons, setMessage}) => {
   }
 
   if (persons.length === 0) {
-    return <p>no contacts matching filter criteria</p>
+    return <p>no person matching filter criteria</p>
   } else {
     return persons.map((person) => {
     
     return (<li key={person.name}>
       {person.name} - {person.number} 
-      <button onClick={() => deleteContact(person)}>
+      <button onClick={() => deletePerson(person)}>
         delete
       </button>
     </li>
@@ -38,4 +38,4 @@ const Contacts = ({persons, setPersons, setMessage}) => {
   }
 }
 
-export default Contacts
+export default Persons
